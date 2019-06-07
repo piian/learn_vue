@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root">
+        <ul>
+            <li v-for="task in tasks" v-text="task.name"></li>
+        </ul>
+        <ul>
+            <li v-for="task in disTasks" v-text="task.name"></li>
+        </ul>
+    </div>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#root',
+            data: {
+                newName: '',
+                tasks: [
+                    { name: 'Joe', show: true },
+                    { name: 'Mary', show: false },
+                    { name: 'Jane', show: true },
+                    { name: 'Jack', show: false },
+                ]
+            },
+            methods: {
+                addName() {
+                    this.names.push(this.newName)
+                    this.newName = ''
+                }
+            },
+            computed: {
+                disTasks() {
+                    return this.tasks.filter(task => !task.show)
+                }
+            },
+        })
+
+    </script>
+</body>
+
+</html>

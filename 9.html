@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.bootcss.com/bulma/0.7.5/css/bulma.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="root">
+        <message title="Hello World"
+            body="Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Pellentesque risus mi</strong>">
+        </message>
+        <message title="Hello Jhon" body="Lorem ipsum dolor sit json">
+        </message>
+    </div>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script>
+
+        Vue.component('message', {
+            props: ['title', 'body'],
+            template: `
+            <article class="message is-small" v-show="isVisiable">
+                <div class="message-header">
+                    <p>{{title}}</p>
+                    <button class="delete" aria-label="delete" @click="isVisiable = false"></button>
+                </div>
+                <div class="message-body">
+                    {{body}}
+                </div>
+                </article>
+            `,
+            data() {
+                return {
+                    isVisiable: true,
+                }
+            }
+        });
+
+        var app = new Vue({
+            el: '#root',
+        })
+
+    </script>
+</body>
+
+</html>

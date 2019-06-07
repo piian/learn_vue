@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root">
+        <ul>
+            <task-list></task-list>
+        </ul>
+    </div>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script>
+
+        Vue.component('task-list', {
+            template: `
+            <div>
+                <task v-for="task in tasks" :key="task.task">{{ task.task }}</task>
+            </div>
+            `,
+            data() {
+                return {
+                    tasks: [
+                        { task: '1', computed: true },
+                        { task: '2', computed: true },
+                        { task: '3', computed: true },
+                        { task: '4', computed: true },
+                    ]
+                }
+            },
+        });
+
+
+        Vue.component('task', {
+            template: `
+            <li><slot></slot></li>
+            `
+        });
+
+
+        var app = new Vue({
+            el: '#root',
+        })
+
+    </script>
+</body>
+
+</html>
