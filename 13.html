@@ -10,36 +10,39 @@
 </head>
 <body>
     <div id="app">
-        <coupon @applied="onCouponApplied"></coupon>
-        <div v-if="couponApplied">
-            you used a coupon!
-        </div>
+        <coupon></coupon>
     </div>
     <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
     <script>
+        window.Event = new class{
+            constructor (){
+                this.vue = new Vue()
+            }
+
+            free(event, data = null){
+                this.vue.$emit(event, data)
+            }
+
+            listen(event, fallback){
+                this.vue.$on(event, fallback)
+            }
+        }
     Vue.component('coupon', {
         template: `
             <input @blur="applied">
         `,
         methods:{
             applied(){
-                this.$emit('applied')
+                Event.free('applied')
             }
         }
     })
 
     new Vue({
         el: '#app',
-        data() {
-            return {
-                couponApplied: false
-            }
+        created() {
+            Event.listen('applied', () => { alert('this is new applied')})  
         },
-        methods:{
-            onCouponApplied(){
-                this.couponApplied = true
-            }
-        }
     })
     </script>
 </body>
