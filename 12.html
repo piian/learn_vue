@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.bootcss.com/bulma/0.7.5/css/bulma.css" rel="stylesheet">
+
+</head>
+<body>
+    <div id="app">
+        <coupon @applied="onCouponApplied"></coupon>
+        <div v-if="couponApplied">
+            you use coupon applied
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script>
+    Vue.component('coupon', {
+        template: `
+            <input @blur="applied">
+        `,
+        methods:{
+            applied(){
+                this.$emit('applied')
+            }
+        }
+    })
+
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                couponApplied: false
+            }
+        },
+        methods:{
+            onCouponApplied(){
+                this.couponApplied = true
+            }
+        }
+    })
+    </script>
+</body>
+</html>
