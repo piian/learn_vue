@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.bootcss.com/bulma/0.7.5/css/bulma.css" rel="stylesheet">
+
+</head>
+<div id="app" class="container">
+    <ul>
+        <li v-for="project in projects" v-text="project.name">
+        </li>
+    </ul>
+    <form action="/store" method="POST" @submit.prevent="submit" @keydown="form.errors.clear($event.target.name)">
+        <div class="field">
+            <label class="label">Name</label>
+            <div class="control">
+                <input class="input" v-model="form.name" name="name" type="text" placeholder="Name">
+            </div>
+            <p class="help is-danger" v-if="form.errors.has('name')" v-text="form.errors.get('name')"></p>
+        </div>
+        <div class="field">
+            <label class="label">Description</label>
+            <div class="control">
+                <input class="input" type="text" v-model="form.description" name="description" placeholder="Description">
+            </div>
+            <p class="help is-danger" v-if="form.errors.has('description')" v-text="form.errors.get('description')"></p>
+        </div>
+
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-link" type="submit" :disabled="form.errors.any()">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<body>
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
+<script>
+
+    axios.interceptors.request.use((config) => {
+        config.headers['X-Requested-With'] = 'XMLHttpRequest';
+        let regex = /.*csrftoken=([^;.]*).*$/; // 用于从cookie中匹配 csrftoken值
+        config.headers['X-CSRFToken'] = document.cookie.match(regex) === null ? null : document.cookie.match(regex)[1];
+        return config
+    })
+
+    class Errors {
+        constructor() {
+            this.errors = {}
+        }
+
+        has(field){
+            return this.errors.hasOwnProperty(field)
+        }
+
+        get(field) {
+            if (this.errors[field]) {
+                return this.errors[field][0]
+            }
+        }
+
+        record(error) {
+            return this.errors = error
+        }
+
+        clear(field) {
+            delete this.errors[field]
+        }
+
+        any() {
+            return Object.keys(this.errors).length > 0
+        }
+    }
+
+    class Form {
+        constructor(data){
+            this.originalData = data
+            for (let field in data){
+                this[field] = data[field]
+            }
+
+            this.errors = new Errors()
+        }
+
+        data(){
+            let params = new FormData()
+            for (let field in this.originalData){
+                params.append(field, this.originalData[field])
+                console.log(this.originalData[field])
+                console.log(field)
+                console.log(params)
+                {#params[field] = this.originalData[field]#}
+            }
+            return params
+        }
+
+        submit(methodType, url){
+            console.log(this.data())
+            axios[methodType](url, this.data())
+                    .then(this.onSuccess)
+                    .catch(this.onFail)
+        }
+
+        onSuccess(response){
+            alert(response.data.message)
+            this.loadData()
+        }
+
+        onFail(error){
+                this.errors.record(error.response.data)
+        }
+
+        reset(){
+            this.originalData = {}
+        }
+    }
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            projects: [],
+            form : new Form({
+                name:'',
+                description:''
+            }),
+        },
+        mounted() {
+            this.loadData()
+        },
+        methods: {
+            loadData() {
+                self = this
+                axios.get('http://localhost:8000/data').then((res) => {
+                    self.projects = res.data
+                })
+            },
+            submit() {
+                this.form.submit('post', '/store')
+            },
+            onFail(error) {
+                this.form.errors.record(error.response.data)
+            }
+        }
+    })
+</script>
+</body>
+
+</html>
