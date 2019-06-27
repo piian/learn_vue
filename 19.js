@@ -129,9 +129,18 @@ class Form {
      * @memberof Form
      */
     submit(requestType, url) {
-        axios[requestType](url, this.data2())
-            .then(this.onSuccess.bind(this))
-            .catch(this.onFail.bind(this))
+        return new Promise((resolve, reject) => {
+            axios[requestType](url, this.data2())
+                .then(response => {
+                    this.onSuccess(response.data)
+                    resolve(response.data)
+                })
+                .catch(error => {
+                    this.onFail(error.response)
+                    reject(error.response)
+                })
+        })
+
     }
 
     /**
@@ -140,8 +149,8 @@ class Form {
      * @param {*} response
      * @memberof Form
      */
-    onSuccess(response) {
-        alert(response.data.message)
+    onSuccess(data) {
+        alert(data.message)
 
         this.errors.clear()
 
@@ -154,8 +163,8 @@ class Form {
      * @param {*} errors
      * @memberof Form
      */
-    onFail(errors) {
-        this.errors.record(errors.response.data)
+    onFail(response) {
+        this.errors.record(response.data)
     }
 }
 
